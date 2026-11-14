@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexora Café — Demo website</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif'],display:['"Space Grotesk"','Inter','sans-serif']},colors:{ink:'#040a1c',navy:{900:'#060d24',800:'#0a1433',700:'#0f1d47'}},
+keyframes:{float:{'0%,100%':{transform:'translateY(0)'},'50%':{transform:'translateY(-14px)'}},d1:{'0%,100%':{transform:'translate(0,0) scale(1)'},'50%':{transform:'translate(80px,60px) scale(1.15)'}},d2:{'0%,100%':{transform:'translate(0,0) scale(1)'},'50%':{transform:'translate(-90px,-40px) scale(1.2)'}},d3:{'0%,100%':{transform:'translate(0,0)'},'50%':{transform:'translate(40px,-80px)'}}},
+animation:{float:'float 6s ease-in-out infinite',d1:'d1 18s ease-in-out infinite',d2:'d2 22s ease-in-out infinite',d3:'d3 26s ease-in-out infinite'}}}}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--a1:#d6a35c;--a2:#b45309}
+body{background:#140a10}
+.tx1{color:var(--a1)}.tx2{color:var(--a2)}
+.grad-text{background:linear-gradient(90deg,var(--a1),var(--a2),var(--a1));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+@keyframes shine{to{background-position:200% center}}
+.glass{background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.hov{transition:transform .35s,border-color .35s,box-shadow .35s}
+.hov:hover{transform:translateY(-6px);border-color:var(--a1);box-shadow:0 20px 60px -20px var(--a1)}
+.btn{background:linear-gradient(135deg,var(--a1),var(--a2));color:#04101f;font-weight:700;transition:transform .25s,box-shadow .25s;box-shadow:0 10px 40px -12px var(--a1)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 16px 50px -10px var(--a2)}
+.gridbg{background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%)}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .9s,transform .9s}.reveal.show{opacity:1;transform:none}
+.chip{border:1px solid rgba(255,255,255,.12);transition:.25s}.chip:hover{border-color:var(--a1)}
+.chip.on{background:linear-gradient(135deg,var(--a1),var(--a2));color:#04101f;border-color:transparent;font-weight:700}
+input,textarea,select{outline:none}input:focus,textarea:focus,select:focus{border-color:var(--a1)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--a1) 25%,transparent)}
+select option{background:#0a1433}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style></head>
+<body class="font-sans text-slate-300 antialiased overflow-x-hidden">
+<div class="fixed inset-0 -z-10 overflow-hidden bg-gradient-to-b from-ink via-navy-900 to-ink">
+ <div class="absolute -top-40 -left-32 w-[560px] h-[560px] rounded-full blur-[120px] animate-d1" style="background:var(--a1);opacity:.28"></div>
+ <div class="absolute top-1/3 -right-40 w-[620px] h-[620px] rounded-full blur-[130px] animate-d2" style="background:var(--a2);opacity:.2"></div>
+ <div class="absolute -bottom-40 left-1/4 w-[520px] h-[520px] rounded-full bg-indigo-600/25 blur-[120px] animate-d3"></div>
+ <div class="absolute inset-0 gridbg"></div>
+ <canvas id="net" class="absolute inset-0 w-full h-full"></canvas>
+</div>
+<div class="relative z-50 bg-black/40 border-b border-white/10 text-xs text-center py-1.5 text-slate-400">Demo project by <b class="text-white">Nexora Web</b> · <a href="restaurant.html" class="tx1 underline">← Back to restaurants</a> · <a href="index.html#portfolio" class="tx1 underline">Portfolio</a></div><div id="demoNote" class="relative z-50 bg-amber-400 text-black text-xs sm:text-sm text-center py-2 px-4 font-medium">⚠️ This is a <b>demo website</b>. We do not sell these products or services. It only shows what Nexora Web can build for your business.</div>
+<header class="sticky top-0 z-40 bg-ink/75 backdrop-blur-xl border-b border-white/5"><div class="max-w-7xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between gap-6">
+<a href="#" class="flex items-center gap-2.5"><span class="w-10 h-10 rounded-xl btn grid place-items-center font-display text-lg">N</span><span class="font-display text-xl font-semibold text-white">Nexora<span class="tx1">.</span>Café</span></a><nav class="hidden lg:flex items-center gap-8 text-sm font-medium"><a href="#menu" class="hover:text-white transition">Menu</a><a href="#why" class="hover:text-white transition">Why us</a><a href="#how" class="hover:text-white transition">How to order</a><a href="#contact" class="hover:text-white transition">Contact</a></nav>
+<a href="javascript:void(0)" id="cartBtn" class="btn text-sm px-6 py-3 rounded-full whitespace-nowrap">Order <span id="count" class="ml-1 bg-ink/80 text-white text-xs px-2 py-0.5 rounded-full">0</span></a></div></header><style>html{scroll-padding-top:90px}</style><section class="relative overflow-hidden"><div class="absolute inset-0" style="background:linear-gradient(135deg,var(--a1),var(--a2))"></div><img src="https://unsplash.com/photos/ymtPhYNK49A/download?w=1600" alt="Nexora Café" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://loremflickr.com/800/600/coffee'}else{this.style.display='none'}" class="absolute inset-0 w-full h-full object-cover"><div class="absolute inset-0" style="background:linear-gradient(to top,#140a10,#140a10cc 45%,#140a1066)"></div><div class="relative max-w-5xl mx-auto px-5 sm:px-8 pt-28 pb-32 text-center reveal"><span class="glass rounded-full px-4 py-2 text-xs tx1 font-semibold tracking-widest">COFFEE · BAKERY · BREAKFAST</span><h1 class="font-display text-5xl sm:text-7xl font-bold text-white leading-[1.03] mt-7">Good coffee, <span class="grad-text">slow mornings.</span></h1><p class="mt-6 text-lg text-slate-300 max-w-xl mx-auto">Coffee, fresh pastries and all-day breakfast. Order ahead for pickup.</p><div class="mt-9 flex gap-4 justify-center flex-wrap"><a href="#menu" class="btn px-9 py-4 rounded-full">Order now</a><a href="restaurant.html" class="glass text-white font-semibold px-9 py-4 rounded-full">All restaurants</a></div></div></section>
+<section id="menu" class="max-w-7xl mx-auto px-5 sm:px-8 py-16"><div class="reveal max-w-2xl mb-8"><span class="tx1 text-sm font-semibold tracking-widest uppercase">Our menu</span><h2 class="font-display text-3xl sm:text-5xl font-bold text-white mt-3">Choose your favourites</h2><p class="mt-3 text-slate-400">Pick a category and add to your order.</p></div><div class="flex flex-wrap items-end justify-between gap-4 reveal"><div id="filters" class="flex gap-2 text-sm flex-wrap"></div><input id="q" placeholder="Search…" class="bg-white/5 border border-white/10 rounded-full px-5 py-2.5 text-sm text-white placeholder-slate-500 w-56"></div>
+<div id="grid" class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div><p id="empty" class="hidden text-center text-slate-400 py-16">Nothing matches your search.</p></section>
+<section id="why" class="py-16"><div class="max-w-7xl mx-auto px-5 sm:px-8"><div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"><div class="reveal glass hov rounded-2xl p-7"><div class="text-3xl">🔥</div><h3 class="font-display text-lg font-semibold text-white mt-4">Made to order</h3><p class="text-sm text-slate-400 mt-2">Prepared fresh after you order.</p></div><div class="reveal glass hov rounded-2xl p-7"><div class="text-3xl">🛵</div><h3 class="font-display text-lg font-semibold text-white mt-4">Delivery or pickup</h3><p class="text-sm text-slate-400 mt-2">Choose what suits you.</p></div><div class="reveal glass hov rounded-2xl p-7"><div class="text-3xl">✉️</div><h3 class="font-display text-lg font-semibold text-white mt-4">Order by email</h3><p class="text-sm text-slate-400 mt-2">Your order arrives in our inbox.</p></div><div class="reveal glass hov rounded-2xl p-7"><div class="text-3xl">📝</div><h3 class="font-display text-lg font-semibold text-white mt-4">Special requests</h3><p class="text-sm text-slate-400 mt-2">Add notes for allergies or changes.</p></div></div></div></section>
+<section id="how" class="py-16"><div class="max-w-7xl mx-auto px-5 sm:px-8"><div class="reveal text-center"><h2 class="font-display text-3xl sm:text-5xl font-bold text-white">How it works</h2></div><div class="mt-12 grid md:grid-cols-4 gap-6"><div class="reveal glass rounded-2xl p-7" style="transition-delay:.0s"><div class="font-display text-5xl font-bold text-white/10">01</div><h3 class="font-display text-lg font-semibold text-white mt-3">Pick your food</h3><p class="text-sm text-slate-400 mt-2">Browse categories and search.</p></div><div class="reveal glass rounded-2xl p-7" style="transition-delay:.1s"><div class="font-display text-5xl font-bold text-white/10">02</div><h3 class="font-display text-lg font-semibold text-white mt-3">Add to order</h3><p class="text-sm text-slate-400 mt-2">Review your cart.</p></div><div class="reveal glass rounded-2xl p-7" style="transition-delay:.2s"><div class="font-display text-5xl font-bold text-white/10">03</div><h3 class="font-display text-lg font-semibold text-white mt-3">Send by email</h3><p class="text-sm text-slate-400 mt-2">Add your details and send.</p></div><div class="reveal glass rounded-2xl p-7" style="transition-delay:.3s"><div class="font-display text-5xl font-bold text-white/10">04</div><h3 class="font-display text-lg font-semibold text-white mt-3">We confirm</h3><p class="text-sm text-slate-400 mt-2">We reply with time and price.</p></div></div></div></section>
+<section id="contact" class="py-16"><div class="max-w-4xl mx-auto px-5 sm:px-8"><div class="glass rounded-3xl p-10 text-center reveal"><h2 class="font-display text-3xl font-bold text-white">Questions?</h2><p class="text-slate-400 mt-3">Send us an email and we will get back to you.</p><a href="mailto:fikratnazirli70@gmail.com?subject=Question%20for%20Nexora%20Café" class="btn inline-block mt-6 px-8 py-3.5 rounded-full">✉️ fikratnazirli70@gmail.com</a></div></div></section>
+<footer class="border-t border-white/5 mt-10"><div class="max-w-7xl mx-auto px-5 sm:px-8 py-14 grid sm:grid-cols-2 lg:grid-cols-5 gap-10">
+<div class="lg:col-span-2"><a href="#" class="flex items-center gap-2.5"><span class="w-10 h-10 rounded-xl btn grid place-items-center font-display text-lg">N</span><span class="font-display text-xl font-semibold text-white">Nexora<span class="tx1">.</span>Café</span></a><p class="mt-4 text-sm text-slate-400 max-w-xs">Coffee, fresh pastries and all-day breakfast. Order ahead for pickup.</p></div><div><h4 class="text-white font-semibold text-sm">Explore</h4><ul class="mt-4 space-y-2.5 text-sm text-slate-400"><li><a href="#" class="hover:text-white">Menu</a></li><li><a href="#" class="hover:text-white">How it works</a></li><li><a href="#" class="hover:text-white">Contact</a></li><li><a href="#" class="hover:text-white">FAQ</a></li></ul></div><div><h4 class="text-white font-semibold text-sm">Info</h4><ul class="mt-4 space-y-2.5 text-sm text-slate-400"><li><a href="#" class="hover:text-white">About</a></li><li><a href="#" class="hover:text-white">Delivery</a></li><li><a href="#" class="hover:text-white">Terms</a></li><li><a href="#" class="hover:text-white">Privacy</a></li></ul></div><div><h4 class="text-white font-semibold text-sm">Contact</h4><ul class="mt-4 space-y-2.5 text-sm text-slate-400"><li><a href="#" class="hover:text-white">Email us</a></li><li><a href="#" class="hover:text-white">Support</a></li><li><a href="#" class="hover:text-white">Careers</a></li><li><a href="#" class="hover:text-white">Press</a></li></ul></div></div>
+<div class="border-t border-white/5 py-6 text-center text-xs text-slate-500">© 2026 Nexora Café. All rights reserved. · Demo website by <a href="index.html" class="tx1">Nexora Web</a></div></footer><div id="drawer" class="fixed inset-0 z-[60] hidden"><div id="overlay" class="absolute inset-0 bg-black/60"></div>
+<aside class="absolute right-0 top-0 h-full w-full max-w-md bg-navy-900 border-l border-white/10 p-6 flex flex-col overflow-y-auto">
+<div class="flex justify-between items-center"><h3 class="font-display text-2xl text-white">Your order</h3><button id="close" class="text-3xl text-white">×</button></div><div class="mt-4"><div id="hint" class="text-xs text-slate-400"></div><div class="h-2 rounded-full bg-white/10 mt-2 overflow-hidden"><div id="bar" class="h-full btn" style="width:0%"></div></div></div>
+<div id="items" class="mt-5 space-y-3"></div>
+<form id="checkout" class="mt-6 border-t border-white/10 pt-5 grid gap-3"><select id="otype" name="Order type" class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-slate-300 text-sm"><option>Delivery</option><option>Pickup</option></select><input name="Name" type="text" placeholder="Your name" required class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm"><input name="Email" type="email" placeholder="Your email" required class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm"><input name="Address" type="text" placeholder="Delivery address (if delivery)" class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm"><textarea name="Notes" rows="2" placeholder="Notes (allergies, floor, gate code…)" class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm resize-none"></textarea>
+<div class="flex justify-between text-sm text-slate-400"><span>Subtotal</span><span id="sub">$0</span></div><div id="feeRow" class="flex justify-between text-sm text-slate-400 mt-1"><span>Delivery</span><span id="fee">—</span></div>
+<div class="flex justify-between font-semibold text-white text-lg"><span>Total</span><span id="total">$0</span></div>
+<button class="btn py-3.5 rounded-full">Send order by email</button><p class="text-xs text-slate-500 text-center">Demo only: no real order is placed. Your email app opens with the details ready to send to Nexora Web.</p></form></aside></div><p class="text-center text-xs text-slate-600 pb-6">Photos are placeholders from public photo libraries. Real projects use your own photos.</p>
+<script>
+const IMG=(id,w=700)=>{if(id.indexOf('kw:')===0){const p=id.split(':');return `https://loremflickr.com/${w}/${Math.round(w*.75)}/${p[1]}?lock=${p[2]}`}if(id.indexOf('u:')===0){return `https://unsplash.com/photos/${id.slice(2)}/download?w=${w}`}return `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`};
+function fb(el,kw){if(!el.dataset.f&&kw){el.dataset.f=1;el.src='https://loremflickr.com/700/525/'+kw}else{el.style.display='none'}}
+function shop(cfg){
+ const $=s=>document.querySelector(s);
+ let cart={};try{cart=JSON.parse(localStorage.getItem(cfg.key)||'{}')}catch(e){}
+ let cat='All',q='',sel={};
+ const save=()=>{try{localStorage.setItem(cfg.key,JSON.stringify(cart))}catch(e){}};
+ const unit=(p,s)=>p.sized?Math.round(p.price*(cfg.sizes[s||'M']||1)*2)/2:p.price;
+ const money=n=>cfg.cur+(Number.isInteger(n)?n.toLocaleString('en-US'):n.toFixed(2));
+ const find=id=>cfg.items.find(x=>x.id===id);
+ function filters(){const cats=['All',...new Set(cfg.items.map(p=>p.cat))];
+  $('#filters').innerHTML=cats.map(c=>`<button class="chip px-5 py-2 rounded-full ${c===cat?'on':''}" data-c="${c}">${c}${c==='All'?'':' <span class="opacity-60 text-xs">'+cfg.items.filter(p=>p.cat===c).length+'</span>'}</button>`).join('');
+  $('#filters').querySelectorAll('button').forEach(b=>b.onclick=()=>{cat=b.dataset.c;filters();grid()})}
+ function grid(){
+  const list=cfg.items.filter(p=>(cat==='All'||p.cat===cat)&&(p.name+' '+p.desc).toLowerCase().includes(q));
+  $('#empty').classList.toggle('hidden',list.length>0);
+  $('#grid').innerHTML=list.map(p=>`<div class="group glass hov rounded-2xl p-3 flex flex-col">
+   <div class="relative aspect-[4/3] overflow-hidden rounded-xl" style="background:linear-gradient(135deg,var(--a1),var(--a2))">
+    <div class="absolute inset-0 grid place-items-center text-6xl opacity-60">${p.e}</div>
+    <img src="${IMG(p.img)}" alt="${p.name}" loading="lazy" onerror="fb(this,'${p.kw}')" class="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover:scale-105">
+    ${p.tag?`<span class="absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-full bg-black/60 backdrop-blur text-white">${p.tag.toUpperCase()}</span>`:''}</div>
+   <div class="p-3 flex flex-col flex-1"><div class="flex justify-between gap-3"><h3 class="font-display font-semibold text-white">${p.name}</h3><div class="font-bold tx1 whitespace-nowrap" id="pr-${p.id}">${p.from?'from ':''}${money(unit(p,sel[p.id]))}${p.per?'<span class="text-xs text-slate-500 font-normal"> '+p.per+'</span>':''}</div></div>
+   <p class="text-sm text-slate-400 mt-1.5 flex-1">${p.desc}</p>
+   ${p.sized?`<div class="flex gap-2 mt-4">${Object.keys(cfg.sizes).map(s=>`<button class="chip text-xs px-3 py-1.5 rounded-full ${(sel[p.id]||'M')===s?'on':''}" onclick="pick('${p.id}','${s}')">${s} · ${cfg.sizeLabels[s]}</button>`).join('')}</div>`:''}
+   <button onclick="add('${p.id}')" class="btn mt-4 py-2.5 rounded-full text-sm">${cfg.addLabel}</button></div></div>`).join('')}
+ window.pick=(id,s)=>{sel[id]=s;grid()};
+ window.add=id=>{const p=find(id),k=id+'|'+(p.sized?(sel[id]||'M'):'');cart[k]=(cart[k]||0)+1;save();render();$('#drawer').classList.remove('hidden')};
+ window.chg=(k,d)=>{cart[k]=(cart[k]||0)+d;if(cart[k]<=0)delete cart[k];save();render()};
+ function lines(){return Object.keys(cart).map(k=>{const [id,s]=k.split('|'),p=find(id);return {k,p,s,q:cart[k],u:unit(p,s)}})}
+ function totals(){const L=lines();const sub=L.reduce((a,l)=>a+l.u*l.q,0);let fee=0;
+  if(cfg.delivery&&sub>0&&$('#otype')&&$('#otype').value==='Delivery'&&sub<cfg.delivery.free)fee=cfg.delivery.fee;return {L,sub,fee,total:sub+fee}}
+ function render(){const {L,sub,fee,total}=totals();
+  $('#items').innerHTML=L.length?L.map(l=>`<div class="flex gap-3 items-center glass rounded-xl p-3">
+   <div class="w-16 h-16 rounded-lg overflow-hidden relative shrink-0" style="background:linear-gradient(135deg,var(--a1),var(--a2))"><img src="${IMG(l.p.img,200)}" class="w-full h-full object-cover" onerror="fb(this,'${l.p.kw}')"></div>
+   <div class="flex-1 min-w-0"><div class="font-medium text-sm text-white truncate">${l.p.name}${l.s?' ('+l.s+')':''}</div><div class="text-xs text-slate-500">${money(l.u)}</div>
+   <div class="flex items-center gap-3 mt-1"><button onclick="chg('${l.k}',-1)" class="w-6 h-6 border border-white/20 rounded-full">−</button><span class="text-sm text-white">${l.q}</span><button onclick="chg('${l.k}',1)" class="w-6 h-6 border border-white/20 rounded-full">+</button></div></div>
+   <div class="text-sm font-semibold text-white">${money(l.u*l.q)}</div></div>`).join(''):`<p class="text-slate-500 text-sm">${cfg.empty}</p>`;
+  $('#count').textContent=L.reduce((a,l)=>a+l.q,0);
+  $('#sub').textContent=money(sub);
+  if($('#feeRow')){$('#feeRow').style.display=cfg.delivery?'flex':'none';$('#fee').textContent=fee?money(fee):(sub>0&&$('#otype').value==='Delivery'?'Free':'—')}
+  $('#total').textContent=money(total);
+  if($('#hint')&&cfg.delivery){$('#hint').textContent=sub>=cfg.delivery.free?'🎉 Free delivery unlocked':`Add ${money(cfg.delivery.free-sub)} more for free delivery`;$('#bar').style.width=Math.min(100,sub/cfg.delivery.free*100)+'%'}}
+ $('#checkout').onsubmit=e=>{e.preventDefault();const {L,sub,fee,total}=totals();if(!L.length){$('#items').insertAdjacentHTML('afterbegin','<p class="text-rose-300 text-sm">Please add something first.</p>');return}
+  const f=new FormData(e.target);
+  const body=[`${cfg.orderTitle}`,'',...L.map(l=>`${l.q} x ${l.p.name}${l.s?' ('+l.s+')':''} - ${money(l.u*l.q)}`),'',`Subtotal: ${money(sub)}`,...(cfg.delivery?[`Delivery: ${fee?money(fee):'Free / pickup'}`]:[]),`Total: ${money(total)}`,'',...[...f.entries()].filter(([k,v])=>v).map(([k,v])=>`${k}: ${v}`)].join('\n');
+  if(window.nx&&nx.enabled){var btn=e.target.querySelector('button:last-of-type');var msg=document.createElement('p');msg.className='text-sm text-center text-slate-300';msg.textContent='Sending…';e.target.appendChild(msg);nx.send({site:document.title,name:f.get('Name')||'',email:f.get('Email')||'',subject:cfg.subject,body:body}).then(function(ok){msg.className='text-sm text-center '+(ok?'text-emerald-300':'text-rose-300');msg.textContent=ok?'\u2705 Sent! We will reply by email.':'Could not send. Please use the Email us button.'})}else{location.href='mailto:'+cfg.email+'?subject='+encodeURIComponent('[Demo site] '+cfg.subject)+'&body='+encodeURIComponent(body)}};
+ if($('#otype'))$('#otype').onchange=render;
+ if($('#q'))$('#q').oninput=e=>{q=e.target.value.toLowerCase();grid()};
+ ['#cartBtn','#cartBtn2'].forEach(s=>{if($(s))$(s).onclick=()=>$('#drawer').classList.remove('hidden')});
+ $('#close').onclick=$('#overlay').onclick=()=>$('#drawer').classList.add('hidden');
+ filters();grid();render();
+}
+</script><script>shop({"key": "nx-cafe", "cur": "$", "items": [{"id": "i0", "cat": "Coffee", "name": "Espresso", "desc": "Double shot, rich and short.", "price": 2.5, "e": "\u2615", "kw": "espresso", "img": "u:LA2iufSioMs"}, {"id": "i1", "cat": "Coffee", "name": "Cappuccino", "desc": "Espresso with silky steamed milk.", "price": 3.5, "e": "\u2615", "kw": "cappuccino", "img": "u:e9pIYDB7Aio"}, {"id": "i2", "cat": "Coffee", "name": "Latte", "desc": "Smooth, milky and lightly sweet.", "price": 3.8, "e": "\ud83e\udd5b", "kw": "latte,art", "img": "u:ymtPhYNK49A"}, {"id": "i3", "cat": "Coffee", "name": "Iced Latte", "desc": "Chilled espresso, milk and ice.", "price": 4.2, "e": "\ud83e\uddca", "kw": "iced,latte", "img": "u:LA2iufSioMs"}, {"id": "i4", "cat": "Tea", "name": "Green Tea", "desc": "Fresh brewed.", "price": 3, "e": "\ud83c\udf75", "kw": "tea,cup", "img": "u:e9pIYDB7Aio"}, {"id": "i5", "cat": "Bakery", "name": "Butter Croissant", "desc": "Flaky and baked daily.", "price": 3, "e": "\ud83e\udd50", "kw": "croissant", "img": "u:MV5NQ8oV5LU"}, {"id": "i6", "cat": "Bakery", "name": "Cinnamon Roll", "desc": "Soft roll with cinnamon glaze.", "price": 3.8, "e": "\ud83e\udd6f", "kw": "cinnamon,roll", "img": "u:jeHTgSM6Ujc"}, {"id": "i7", "cat": "Breakfast", "name": "Avocado Toast", "desc": "Sourdough, avocado and a poached egg.", "price": 8, "e": "\ud83e\udd51", "kw": "avocado,toast", "img": "u:hlkmA5Tw3Gk"}, {"id": "i8", "cat": "Breakfast", "name": "Pancake Stack", "desc": "Pancakes with maple syrup and berries.", "price": 7.5, "e": "\ud83e\udd5e", "kw": "pancakes", "img": "u:Vr2TeXxV7jo"}], "sizes": {}, "sizeLabels": {}, "addLabel": "Add to order", "empty": "Your order is empty. Pick something from the menu.", "email": "fikratnazirli70@gmail.com", "subject": "Food order", "orderTitle": "New order from Nexora Caf\u00e9", "delivery": {"fee": 3, "free": 30}})</script><script>
+function sendMail(e,topic){e.preventDefault();const f=e.target,lines=[];
+f.querySelectorAll('input:not([type=file]),textarea,select').forEach(el=>{if(el.value)lines.push((el.placeholder||'Selected')+': '+el.value)});
+location.href='mailto:fikratnazirli70@gmail.com?subject='+encodeURIComponent('[Demo site] '+topic)+'&body='+encodeURIComponent(lines.join('\n'));return false}
+</script>
+<script>
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('show');io.unobserve(x.target)}}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+(function(){const c=document.getElementById('net'),ctx=c.getContext('2d');let w,h,pts=[];const m={x:null,y:null};
+const cs=getComputedStyle(document.documentElement);const rgb=v=>{const t=document.createElement('canvas').getContext('2d');t.fillStyle=cs.getPropertyValue(v).trim();const f=t.fillStyle;const n=parseInt(f.slice(1),16);return [(n>>16)&255,(n>>8)&255,n&255]};
+const A1=rgb('--a1'),A2=rgb('--a2');
+function rs(){w=c.width=innerWidth;h=c.height=innerHeight;const n=Math.min(90,Math.floor(w*h/18000));pts=Array.from({length:n},()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.6+.6}))}
+addEventListener('resize',rs);rs();addEventListener('mousemove',e=>{m.x=e.clientX;m.y=e.clientY});
+function d(){ctx.clearRect(0,0,w,h);for(const p of pts){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.283);ctx.fillStyle=`rgba(${A1},.7)`;ctx.fill()}
+for(let i=0;i<pts.length;i++){for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,k=Math.hypot(dx,dy);if(k<130){ctx.strokeStyle=`rgba(${A1},${.16*(1-k/130)})`;ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke()}}
+if(m.x!==null){const dx=pts[i].x-m.x,dy=pts[i].y-m.y,k=Math.hypot(dx,dy);if(k<170){ctx.strokeStyle=`rgba(${A2},${.3*(1-k/170)})`;ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(m.x,m.y);ctx.stroke()}}}
+requestAnimationFrame(d)}d()})();
+</script>
+<a href="mailto:fikratnazirli70@gmail.com?subject=Website%20enquiry%20(Nexora%20Web)" class="fixed bottom-5 left-5 z-[55] btn px-5 py-3 rounded-full text-sm shadow-xl flex items-center gap-2">✉️ Email us</a><script>
+/* ===== Nexora Web — messages setup =====
+   1) Create a free Supabase project, run setup.sql in its SQL editor.
+   2) Paste your Project URL and anon public key below.
+   Leave them empty and the site simply opens the visitor's email app instead. */
+window.NX_CONFIG = {
+  url: 'https://mhsxdiczajglurxsobig.supabase.co',            // e.g. https://abcdxyz.supabase.co
+  key: 'sb_publishable_t-mIyFkM36sj97BW8CSHAQ_tmzxKf8F',            // anon public key
+  email: 'fikratnazirli70@gmail.com'
+};
+(function(){
+  var C = window.NX_CONFIG;
+  var nx = window.nx = { enabled: !!(C.url && C.key), email: C.email };
+  nx.send = function(m){
+    if(!nx.enabled) return Promise.resolve(false);
+    return fetch(C.url.replace(/\/$/,'') + '/rest/v1/messages', {
+      method:'POST',
+      headers:{'apikey':C.key,'Authorization':(C.key.indexOf('eyJ')===0?'Bearer '+C.key:undefined),'Content-Type':'application/json','Prefer':'return=minimal'},
+      body: JSON.stringify({site:String(m.site||'').slice(0,200),name:String(m.name||'').slice(0,200),email:String(m.email||'').slice(0,200),subject:String(m.subject||'').slice(0,300),body:String(m.body||'').slice(0,8000)})
+    }).then(function(r){return r.ok}).catch(function(){return false});
+  };
+  function widget(){
+    if(document.getElementById('nxFab')) return;
+    var fab=document.createElement('button');
+    fab.id='nxFab'; fab.type='button'; fab.textContent='💬 Message us';
+    fab.style.cssText='position:fixed;bottom:20px;right:20px;z-index:55;padding:12px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(15,23,42,.9);color:#fff;font:600 14px Inter,system-ui,sans-serif;cursor:pointer;backdrop-filter:blur(8px)';
+    var box=document.createElement('div');
+    box.id='nxBox'; box.style.cssText='display:none;position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.65);align-items:center;justify-content:center;padding:16px';
+    box.innerHTML='<form id="nxForm" style="width:100%;max-width:420px;background:#0b1224;border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:24px;color:#e2e8f0;font:14px Inter,system-ui,sans-serif;display:grid;gap:12px">'
+     +'<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:20px;color:#fff">Send us a message</b><button type="button" id="nxX" style="background:none;border:0;color:#fff;font-size:26px;cursor:pointer">×</button></div>'
+     +'<input name="name" required placeholder="Your name" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff">'
+     +'<input name="email" type="email" required placeholder="Your email" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff">'
+     +'<textarea name="msg" rows="4" required placeholder="Your message" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;resize:none"></textarea>'
+     +'<button style="padding:13px;border-radius:999px;border:0;background:linear-gradient(135deg,var(--a1,#22e6c7),var(--a2,#6366f1));color:#04101c;font-weight:700;cursor:pointer">Send message</button>'
+     +'<p id="nxOut" style="margin:0;text-align:center;font-size:13px;color:#94a3b8">We reply by email.</p></form>';
+    document.body.appendChild(fab); document.body.appendChild(box);
+    fab.onclick=function(){box.style.display='flex'};
+    box.querySelector('#nxX').onclick=function(){box.style.display='none'};
+    box.onclick=function(e){if(e.target===box)box.style.display='none'};
+    box.querySelector('#nxForm').onsubmit=function(e){
+      e.preventDefault();
+      var f=new FormData(e.target), out=box.querySelector('#nxOut');
+      var data={site:document.title,name:f.get('name'),email:f.get('email'),subject:'Message from website',body:f.get('msg')};
+      if(!nx.enabled){
+        location.href='mailto:'+nx.email+'?subject='+encodeURIComponent('Message from '+document.title)+'&body='+encodeURIComponent('Name: '+data.name+'\nEmail: '+data.email+'\n\n'+data.body);
+        return;
+      }
+      out.textContent='Sending…';
+      nx.send(data).then(function(ok){
+        out.style.color=ok?'#6ee7b7':'#fda4af';
+        out.textContent=ok?'✅ Sent! We will reply by email.':'Could not send. Please use the Email us button.';
+        if(ok)e.target.reset();
+      });
+    };
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',widget);else widget();
+})();
+
+</script></body></html>

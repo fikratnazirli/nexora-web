@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Nexora Web — Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>body{background:#040a1c;color:#cbd5e1;font-family:Inter,system-ui,sans-serif}.glass{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(10px)}</style></head>
+<body class="min-h-screen">
+<div id="login" class="min-h-screen grid place-items-center p-5">
+ <form id="lf" class="glass rounded-3xl p-8 w-full max-w-sm grid gap-4">
+  <h1 class="text-2xl font-bold text-white">Admin login</h1>
+  <p class="text-sm text-slate-400">Only the site owner can sign in. There is no registration.</p>
+  <input id="em" type="email" required placeholder="Email" class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white">
+  <input id="pw" type="password" required placeholder="Password" class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white">
+  <button class="py-3 rounded-full font-semibold text-slate-900" style="background:linear-gradient(135deg,#22e6c7,#6366f1)">Sign in</button>
+  <p id="lerr" class="text-sm text-rose-300 text-center"></p>
+ </form>
+</div>
+<div id="app" class="hidden max-w-5xl mx-auto p-5 sm:p-8">
+ <div class="flex flex-wrap justify-between items-center gap-3">
+  <h1 class="text-3xl font-bold text-white">Messages <span id="cnt" class="text-base text-slate-400"></span></h1>
+  <div class="flex gap-2"><button id="rf" class="glass rounded-full px-5 py-2 text-sm text-white">Refresh</button><button id="lo" class="glass rounded-full px-5 py-2 text-sm text-white">Log out</button></div>
+ </div>
+ <div class="mt-5 flex gap-2 text-sm"><button data-f="all" class="fl glass rounded-full px-4 py-1.5 text-white">All</button><button data-f="unread" class="fl glass rounded-full px-4 py-1.5 text-white">Unread</button></div>
+ <div id="list" class="mt-5 grid gap-4"></div>
+</div>
+<script>
+/* ===== Nexora Web — messages setup =====
+   1) Create a free Supabase project, run setup.sql in its SQL editor.
+   2) Paste your Project URL and anon public key below.
+   Leave them empty and the site simply opens the visitor's email app instead. */
+window.NX_CONFIG = {
+  url: 'https://mhsxdiczajglurxsobig.supabase.co',            // e.g. https://abcdxyz.supabase.co
+  key: 'sb_publishable_t-mIyFkM36sj97BW8CSHAQ_tmzxKf8F',            // anon public key
+  email: 'fikratnazirli70@gmail.com'
+};
+(function(){
+  var C = window.NX_CONFIG;
+  var nx = window.nx = { enabled: !!(C.url && C.key), email: C.email };
+  nx.send = function(m){
+    if(!nx.enabled) return Promise.resolve(false);
+    return fetch(C.url.replace(/\/$/,'') + '/rest/v1/messages', {
+      method:'POST',
+      headers:{'apikey':C.key,'Authorization':(C.key.indexOf('eyJ')===0?'Bearer '+C.key:undefined),'Content-Type':'application/json','Prefer':'return=minimal'},
+      body: JSON.stringify({site:String(m.site||'').slice(0,200),name:String(m.name||'').slice(0,200),email:String(m.email||'').slice(0,200),subject:String(m.subject||'').slice(0,300),body:String(m.body||'').slice(0,8000)})
+    }).then(function(r){return r.ok}).catch(function(){return false});
+  };
+  function widget(){
+    if(document.getElementById('nxFab')) return;
+    var fab=document.createElement('button');
+    fab.id='nxFab'; fab.type='button'; fab.textContent='💬 Message us';
+    fab.style.cssText='position:fixed;bottom:20px;right:20px;z-index:55;padding:12px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(15,23,42,.9);color:#fff;font:600 14px Inter,system-ui,sans-serif;cursor:pointer;backdrop-filter:blur(8px)';
+    var box=document.createElement('div');
+    box.id='nxBox'; box.style.cssText='display:none;position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.65);align-items:center;justify-content:center;padding:16px';
+    box.innerHTML='<form id="nxForm" style="width:100%;max-width:420px;background:#0b1224;border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:24px;color:#e2e8f0;font:14px Inter,system-ui,sans-serif;display:grid;gap:12px">'
+     +'<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:20px;color:#fff">Send us a message</b><button type="button" id="nxX" style="background:none;border:0;color:#fff;font-size:26px;cursor:pointer">×</button></div>'
+     +'<input name="name" required placeholder="Your name" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff">'
+     +'<input name="email" type="email" required placeholder="Your email" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff">'
+     +'<textarea name="msg" rows="4" required placeholder="Your message" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;resize:none"></textarea>'
+     +'<button style="padding:13px;border-radius:999px;border:0;background:linear-gradient(135deg,var(--a1,#22e6c7),var(--a2,#6366f1));color:#04101c;font-weight:700;cursor:pointer">Send message</button>'
+     +'<p id="nxOut" style="margin:0;text-align:center;font-size:13px;color:#94a3b8">We reply by email.</p></form>';
+    document.body.appendChild(fab); document.body.appendChild(box);
+    fab.onclick=function(){box.style.display='flex'};
+    box.querySelector('#nxX').onclick=function(){box.style.display='none'};
+    box.onclick=function(e){if(e.target===box)box.style.display='none'};
+    box.querySelector('#nxForm').onsubmit=function(e){
+      e.preventDefault();
+      var f=new FormData(e.target), out=box.querySelector('#nxOut');
+      var data={site:document.title,name:f.get('name'),email:f.get('email'),subject:'Message from website',body:f.get('msg')};
+      if(!nx.enabled){
+        location.href='mailto:'+nx.email+'?subject='+encodeURIComponent('Message from '+document.title)+'&body='+encodeURIComponent('Name: '+data.name+'\nEmail: '+data.email+'\n\n'+data.body);
+        return;
+      }
+      out.textContent='Sending…';
+      nx.send(data).then(function(ok){
+        out.style.color=ok?'#6ee7b7':'#fda4af';
+        out.textContent=ok?'✅ Sent! We will reply by email.':'Could not send. Please use the Email us button.';
+        if(ok)e.target.reset();
+      });
+    };
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',widget);else widget();
+})();
+
+</script>
+<script>
+const C=window.NX_CONFIG, base=(C.url||'').replace(/\/$/,'');
+let token=null, filter='all';
+try{token=sessionStorage.getItem('nx_tok')}catch(e){}
+const H=()=>({apikey:C.key,Authorization:'Bearer '+token,'Content-Type':'application/json'});
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function show(on){document.getElementById('login').classList.toggle('hidden',on);document.getElementById('app').classList.toggle('hidden',!on)}
+document.getElementById('lf').onsubmit=async e=>{e.preventDefault();const err=document.getElementById('lerr');err.textContent='';
+ if(!C.url||!C.key){err.textContent='Not configured yet: fill url and key in nx.js.';return}
+ try{const r=await fetch(base+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:C.key,'Content-Type':'application/json'},body:JSON.stringify({email:em.value,password:pw.value})});
+  const j=await r.json();if(!r.ok||!j.access_token){err.textContent='Wrong email or password.';return}
+  token=j.access_token;try{sessionStorage.setItem('nx_tok',token)}catch(e){}pw.value='';show(true);load()}catch(x){err.textContent='Network error.'}};
+async function load(){const r=await fetch(base+'/rest/v1/messages?select=*&order=created_at.desc',{headers:H()});
+ if(r.status===401||r.status===403){logout();return}
+ const rows=await r.json();const list=rows.filter(m=>filter==='all'||!m.read);
+ document.getElementById('cnt').textContent='('+rows.filter(m=>!m.read).length+' unread / '+rows.length+')';
+ document.getElementById('list').innerHTML=list.length?list.map(m=>`<div class="glass rounded-2xl p-5 ${m.read?'opacity-70':''}">
+  <div class="flex flex-wrap justify-between gap-2"><div><b class="text-white">${esc(m.name)||'(no name)'}</b> <a class="text-cyan-300 underline text-sm" href="mailto:${esc(m.email)}?subject=Re:%20${encodeURIComponent(m.subject||'')}">${esc(m.email)}</a></div><div class="text-xs text-slate-500">${new Date(m.created_at).toLocaleString()}</div></div>
+  <div class="text-xs text-slate-500 mt-1">${esc(m.site)} · ${esc(m.subject)}</div>
+  <pre class="whitespace-pre-wrap font-sans text-sm text-slate-200 mt-3">${esc(m.body)}</pre>
+  <div class="mt-4 flex gap-2 text-xs"><button onclick="mark(${m.id},${!m.read})" class="glass rounded-full px-4 py-1.5 text-white">${m.read?'Mark unread':'Mark read'}</button><button onclick="del(${m.id})" class="glass rounded-full px-4 py-1.5 text-rose-300">Delete</button></div></div>`).join(''):'<p class="text-slate-500">No messages.</p>'}
+window.mark=async(id,v)=>{await fetch(base+'/rest/v1/messages?id=eq.'+id,{method:'PATCH',headers:H(),body:JSON.stringify({read:v})});load()};
+window.del=async id=>{if(!confirm('Delete this message?'))return;await fetch(base+'/rest/v1/messages?id=eq.'+id,{method:'DELETE',headers:H()});load()};
+function logout(){token=null;try{sessionStorage.removeItem('nx_tok')}catch(e){}show(false)}
+document.getElementById('lo').onclick=logout;document.getElementById('rf').onclick=load;
+document.querySelectorAll('.fl').forEach(b=>b.onclick=()=>{filter=b.dataset.f;load()});
+if(token&&C.url){show(true);load()}
+</script></body></html>

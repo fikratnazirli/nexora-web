@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexora Web — Professional Website Design & Development</title>
+  <meta name="description" content="Nexora Web builds modern, fast and professional websites for your business: company sites, online stores and landing pages." />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['"Space Grotesk"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            ink: '#040a1c',
+            navy: { 900: '#060d24', 800: '#0a1433', 700: '#0f1d47' },
+            brand: { 400: '#5eb0ff', 500: '#3b8bff', 600: '#2468e6' },
+            accent: { 400: '#22e6c7', 500: '#12c9ad' },
+          },
+          keyframes: {
+            float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-14px)' } },
+            drift1: { '0%,100%': { transform: 'translate(0,0) scale(1)' }, '50%': { transform: 'translate(80px,60px) scale(1.15)' } },
+            drift2: { '0%,100%': { transform: 'translate(0,0) scale(1)' }, '50%': { transform: 'translate(-90px,-40px) scale(1.2)' } },
+            drift3: { '0%,100%': { transform: 'translate(0,0) scale(1)' }, '50%': { transform: 'translate(40px,-80px) scale(0.9)' } },
+            shine: { '0%': { backgroundPosition: '0% 50%' }, '100%': { backgroundPosition: '200% 50%' } },
+            marquee: { '0%': { transform: 'translateX(0)' }, '100%': { transform: 'translateX(-50%)' } },
+          },
+          animation: {
+            float: 'float 6s ease-in-out infinite',
+            drift1: 'drift1 18s ease-in-out infinite',
+            drift2: 'drift2 22s ease-in-out infinite',
+            drift3: 'drift3 26s ease-in-out infinite',
+            shine: 'shine 6s linear infinite',
+            marquee: 'marquee 30s linear infinite',
+          },
+        },
+      },
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body { background: #040a1c; }
+    .grad-text {
+      background: linear-gradient(90deg, #5eb0ff, #22e6c7, #5eb0ff);
+      background-size: 200% auto;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .glass {
+      background: linear-gradient(145deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.09);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    }
+    .glass-hover { transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease; }
+    .glass-hover:hover {
+      transform: translateY(-6px);
+      border-color: rgba(94,176,255,.5);
+      box-shadow: 0 20px 60px -20px rgba(59,139,255,.45);
+    }
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(94,176,255,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(94,176,255,.06) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+    }
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity .9s ease, transform .9s ease; }
+    .reveal.show { opacity: 1; transform: none; }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b8bff, #12c9ad);
+      box-shadow: 0 10px 40px -10px rgba(59,139,255,.7);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 50px -10px rgba(34,230,199,.6); }
+    ::selection { background: #3b8bff; color: #fff; }
+    input, textarea, select { outline: none; }
+    input:focus, textarea:focus, select:focus { border-color: #5eb0ff !important; box-shadow: 0 0 0 3px rgba(94,176,255,.2); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body class="font-sans text-slate-300 antialiased overflow-x-hidden">
+
+  <!-- ============ ANIMATED BACKGROUND ============ -->
+  <div class="fixed inset-0 -z-10 overflow-hidden bg-gradient-to-b from-ink via-navy-900 to-ink">
+    <div class="absolute -top-40 -left-32 w-[560px] h-[560px] rounded-full bg-brand-600/30 blur-[120px] animate-drift1"></div>
+    <div class="absolute top-1/3 -right-40 w-[620px] h-[620px] rounded-full bg-accent-500/20 blur-[130px] animate-drift2"></div>
+    <div class="absolute -bottom-40 left-1/4 w-[520px] h-[520px] rounded-full bg-indigo-600/25 blur-[120px] animate-drift3"></div>
+    <div class="absolute inset-0 grid-bg"></div>
+    <canvas id="net" class="absolute inset-0 w-full h-full"></canvas>
+  </div>
+
+  <!-- ============ NAVBAR ============ -->
+  <header id="nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between">
+      <a href="#home" class="flex items-center gap-2.5 group">
+        <span class="w-10 h-10 rounded-xl btn-primary grid place-items-center text-white font-display font-bold text-lg">N</span>
+        <span class="font-display text-xl font-semibold text-white tracking-tight">Nexora<span class="text-brand-400">.</span>Web</span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+        <a href="#services" class="hover:text-white transition">Services</a>
+        <a href="#process" class="hover:text-white transition">Process</a>
+        <a href="#portfolio" class="hover:text-white transition">Portfolio</a>
+        <a href="#pricing" class="hover:text-white transition">Pricing</a>
+        <a href="#faq" class="hover:text-white transition">FAQ</a>
+      </nav>
+
+      <a href="#contact" class="hidden md:inline-flex btn-primary text-white text-sm font-semibold px-6 py-3 rounded-full">Get in touch</a>
+
+      <button id="menuBtn" class="md:hidden w-11 h-11 grid place-items-center rounded-xl glass" aria-label="Menu">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+
+    <div id="mobileMenu" class="hidden md:hidden glass mx-4 rounded-2xl p-5 space-y-4 text-center">
+      <a href="#services" class="block text-white">Services</a>
+      <a href="#process" class="block text-white">Process</a>
+      <a href="#portfolio" class="block text-white">Portfolio</a>
+      <a href="#pricing" class="block text-white">Pricing</a>
+      <a href="#faq" class="block text-white">FAQ</a>
+      <a href="#contact" class="btn-primary block text-white font-semibold py-3 rounded-full">Get in touch</a>
+    </div>
+  </header>
+
+  <main id="home">
+
+    <!-- ============ HERO ============ -->
+    <section class="relative min-h-screen flex items-center pt-28 pb-20">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-14 items-center w-full">
+        <div class="reveal">
+          <span class="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-xs sm:text-sm text-brand-400 font-medium">
+            <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-accent-400"></span></span>
+            Open for new projects
+          </span>
+
+          <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.08] mt-6 tracking-tight">
+            Websites that make your business <span class="grad-text animate-shine">shine online</span>
+          </h1>
+
+          <p class="mt-6 text-lg text-slate-400 max-w-xl leading-relaxed">
+            Modern design, fast performance and a flawless mobile experience. I turn your idea into a professional website that wins you customers.
+          </p>
+
+          <div class="mt-9 flex flex-wrap gap-4">
+            <a href="#contact" class="btn-primary text-white font-semibold px-8 py-4 rounded-full inline-flex items-center gap-2">
+              Start a project
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </a>
+            <a href="#portfolio" class="glass text-white font-semibold px-8 py-4 rounded-full hover:border-brand-400/60 transition">View our work</a>
+          </div>
+        </div>
+
+        <!-- Browser mockup -->
+        <div class="reveal relative hidden lg:block" style="transition-delay:.2s">
+          <div class="absolute -inset-6 bg-gradient-to-tr from-brand-600/30 to-accent-500/20 blur-3xl rounded-full"></div>
+          <div class="relative glass rounded-2xl p-3 animate-float">
+            <div class="flex items-center gap-2 px-3 py-2">
+              <span class="w-3 h-3 rounded-full bg-red-400/80"></span><span class="w-3 h-3 rounded-full bg-yellow-400/80"></span><span class="w-3 h-3 rounded-full bg-green-400/80"></span>
+              <div class="ml-4 flex-1 bg-white/5 rounded-md text-xs text-slate-500 px-3 py-1.5">www.sizin-biznes.az</div>
+            </div>
+            <div class="rounded-xl bg-navy-800/80 p-6 space-y-5">
+              <div class="flex justify-between items-center">
+                <div class="w-24 h-4 rounded bg-white/20"></div>
+                <div class="flex gap-3"><div class="w-12 h-3 rounded bg-white/10"></div><div class="w-12 h-3 rounded bg-white/10"></div><div class="w-12 h-3 rounded bg-white/10"></div></div>
+              </div>
+              <div class="space-y-3 pt-4">
+                <div class="w-3/4 h-7 rounded bg-gradient-to-r from-brand-500 to-accent-400"></div>
+                <div class="w-1/2 h-7 rounded bg-white/20"></div>
+                <div class="w-2/3 h-3 rounded bg-white/10 mt-4"></div>
+                <div class="w-1/2 h-3 rounded bg-white/10"></div>
+                <div class="w-32 h-10 rounded-full bg-gradient-to-r from-brand-500 to-accent-500 mt-4"></div>
+              </div>
+              <div class="grid grid-cols-3 gap-3 pt-4">
+                <div class="h-24 rounded-lg bg-white/5 border border-white/10"></div>
+                <div class="h-24 rounded-lg bg-white/5 border border-white/10"></div>
+                <div class="h-24 rounded-lg bg-white/5 border border-white/10"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="absolute -left-8 bottom-16 glass rounded-xl px-4 py-3 flex items-center gap-3 animate-float" style="animation-delay:-2s">
+            <span class="w-9 h-9 rounded-lg bg-accent-500/20 grid place-items-center text-accent-400">⚡</span>
+            <div><div class="text-white text-sm font-semibold">Fast loading</div><div class="text-xs text-slate-500">Built for speed</div></div>
+          </div>
+          <div class="absolute -right-6 top-10 glass rounded-xl px-4 py-3 flex items-center gap-3 animate-float" style="animation-delay:-4s">
+            <span class="w-9 h-9 rounded-lg bg-brand-500/20 grid place-items-center text-brand-400">📱</span>
+            <div><div class="text-white text-sm font-semibold">Mobile-ready</div><div class="text-xs text-slate-500">All screens</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TECH MARQUEE ============ -->
+    <section class="py-10 border-y border-white/5 bg-white/[0.015] overflow-hidden">
+      <div class="flex w-max animate-marquee gap-16 text-slate-500 font-display text-xl font-semibold whitespace-nowrap">
+        <span>HTML5</span><span>Tailwind CSS</span><span>JavaScript</span><span>React</span><span>WordPress</span><span>SEO</span><span>Responsive</span><span>UI / UX</span><span>Hosting</span><span>SSL</span>
+        <span>HTML5</span><span>Tailwind CSS</span><span>JavaScript</span><span>React</span><span>WordPress</span><span>SEO</span><span>Responsive</span><span>UI / UX</span><span>Hosting</span><span>SSL</span>
+      </div>
+    </section>
+
+    <!-- ============ SERVICES ============ -->
+    <section id="services" class="py-24 sm:py-32">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8">
+        <div class="max-w-2xl reveal">
+          <span class="text-brand-400 text-sm font-semibold tracking-widest uppercase">Services</span>
+          <h2 class="font-display text-3xl sm:text-5xl font-bold text-white mt-3 leading-tight">What I offer</h2>
+          <p class="mt-4 text-slate-400 text-lg">Custom solutions built from scratch around your business needs.</p>
+        </div>
+
+        <div class="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="reveal glass glass-hover rounded-2xl p-8">
+            <div class="w-14 h-14 rounded-xl bg-brand-500/15 grid place-items-center text-2xl">🌐</div>
+            <h3 class="font-display text-xl font-semibold text-white mt-6">Business websites</h3>
+            <p class="mt-3 text-slate-400 leading-relaxed">Multi-page websites that present your company, products and services professionally.</p>
+          </div>
+          <div class="reveal glass glass-hover rounded-2xl p-8" style="transition-delay:.1s">
+            <div class="w-14 h-14 rounded-xl bg-accent-500/15 grid place-items-center text-2xl">🛒</div>
+            <h3 class="font-display text-xl font-semibold text-white mt-6">Online stores</h3>
+            <p class="mt-3 text-slate-400 leading-relaxed">Complete stores with cart, orders and payments, ready to sell online.</p>
+          </div>
+          <div class="reveal glass glass-hover rounded-2xl p-8" style="transition-delay:.2s">
+            <div class="w-14 h-14 rounded-xl bg-indigo-500/15 grid place-items-center text-2xl">🚀</div>
+            <h3 class="font-display text-xl font-semibold text-white mt-6">Landing pages</h3>
+            <p class="mt-3 text-slate-400 leading-relaxed">High-converting single-page sites built for ads and campaigns.</p>
+          </div>
+          <div class="reveal glass glass-hover rounded-2xl p-8">
+            <div class="w-14 h-14 rounded-xl bg-pink-500/15 grid place-items-center text-2xl">🎨</div>
+            <h3 class="font-display text-xl font-semibold text-white mt-6">UI / UX design</h3>
+            <p class="mt-3 text-slate-400 leading-relaxed">Unique design that fits your brand and feels effortless to use.</p>
+          </div>
+          <div class="reveal glass glass-hover rounded-2xl p-8" style="transition-delay:.1s">
+            <div class="w-14 h-14 rounded-xl bg-yellow-500/15 grid place-items-center text-2xl">🔍</div>
+            <h3 class="font-display text-xl font-semibold text-white mt-6">SEO optimization</h3>
+            <p class="mt-3 text-slate-400 leading-relaxed">Technical SEO that helps your site rank higher on Google and reach more customers.</p>
+          </div>
+          <div class="reveal glass glass-hover rounded-2xl p-8" style="transition-delay:.2s">
+            <div class="w-14 h-14 rounded-xl bg-emerald-500/15 grid place-items-center text-2xl">🛠️</div>
+            <h3 class="font-display text-xl font-semibold text-white mt-6">Support & maintenance</h3>
+            <p class="mt-3 text-slate-400 leading-relaxed">Hosting, domains, security and updates. Your site stays online and healthy.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROCESS ============ -->
+    <section id="process" class="py-24 sm:py-32">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8">
+        <div class="text-center max-w-2xl mx-auto reveal">
+          <span class="text-brand-400 text-sm font-semibold tracking-widest uppercase">Process</span>
+          <h2 class="font-display text-3xl sm:text-5xl font-bold text-white mt-3">How we work</h2>
+          <p class="mt-4 text-slate-400 text-lg">Simple, transparent, and done in 4 steps.</p>
+        </div>
+
+        <div class="mt-16 grid md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+          <div class="reveal glass rounded-2xl p-8 relative">
+            <div class="font-display text-6xl font-bold text-white/5 absolute top-4 right-6">01</div>
+            <div class="w-12 h-12 rounded-full btn-primary grid place-items-center text-white font-bold">1</div>
+            <h3 class="font-display text-lg font-semibold text-white mt-6">Discovery</h3>
+            <p class="mt-2 text-slate-400 text-sm leading-relaxed">We discuss your goals, requirements and budget.</p>
+          </div>
+          <div class="reveal glass rounded-2xl p-8 relative" style="transition-delay:.1s">
+            <div class="font-display text-6xl font-bold text-white/5 absolute top-4 right-6">02</div>
+            <div class="w-12 h-12 rounded-full btn-primary grid place-items-center text-white font-bold">2</div>
+            <h3 class="font-display text-lg font-semibold text-white mt-6">Design</h3>
+            <p class="mt-2 text-slate-400 text-sm leading-relaxed">We create a design that fits your brand and agree it with you.</p>
+          </div>
+          <div class="reveal glass rounded-2xl p-8 relative" style="transition-delay:.2s">
+            <div class="font-display text-6xl font-bold text-white/5 absolute top-4 right-6">03</div>
+            <div class="w-12 h-12 rounded-full btn-primary grid place-items-center text-white font-bold">3</div>
+            <h3 class="font-display text-lg font-semibold text-white mt-6">Development</h3>
+            <p class="mt-2 text-slate-400 text-sm leading-relaxed">The site is built, tested and checked on every device.</p>
+          </div>
+          <div class="reveal glass rounded-2xl p-8 relative" style="transition-delay:.3s">
+            <div class="font-display text-6xl font-bold text-white/5 absolute top-4 right-6">04</div>
+            <div class="w-12 h-12 rounded-full btn-primary grid place-items-center text-white font-bold">4</div>
+            <h3 class="font-display text-lg font-semibold text-white mt-6">Launch</h3>
+            <p class="mt-2 text-slate-400 text-sm leading-relaxed">We go live, train you to use it, and support continues.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PORTFOLIO ============ -->
+    <section id="portfolio" class="py-24 sm:py-32">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8">
+        <div class="max-w-2xl reveal">
+          <span class="text-brand-400 text-sm font-semibold tracking-widest uppercase">Portfolio</span>
+          <h2 class="font-display text-3xl sm:text-5xl font-bold text-white mt-3">Selected work</h2>
+          <p class="mt-4 text-slate-400 text-lg">Sample projects. Each one is a separate, dedicated website. Click a card to explore it.</p>
+        </div>
+
+        <div class="mt-14 grid md:grid-cols-3 gap-6">
+          <a href="restaurant.html" target="_blank" class="reveal group glass glass-hover rounded-2xl overflow-hidden block" style="">
+            <div class="h-52 relative overflow-hidden" style="background:linear-gradient(135deg,#fb923c,#f43f5e)">
+              <div class="absolute inset-0 grid place-items-center text-6xl opacity-60">🍕</div>
+              <img src="https://images.unsplash.com/photo-1754799565084-b381bd0b4db7?auto=format&fit=crop&w=800&q=70" alt="Nexora Pizza" loading="lazy" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+            <div class="p-6"><span class="text-xs text-orange-400 font-semibold">RESTAURANTS</span><h3 class="font-display text-xl font-semibold text-white mt-2">Nexora Restaurants</h3><p class="text-sm text-slate-400 mt-2">Pick a restaurant type (pizza, burgers, sushi, cafés…). Each type opens its own dedicated site. <span class="text-orange-400">View demo →</span></p></div>
+          </a>
+          <a href="business.html" target="_blank" class="reveal group glass glass-hover rounded-2xl overflow-hidden block" style="transition-delay:.1s">
+            <div class="h-52 relative overflow-hidden" style="background:linear-gradient(135deg,#60a5fa,#6366f1)">
+              <div class="absolute inset-0 grid place-items-center text-6xl opacity-60">💼</div>
+              <img src="https://images.unsplash.com/photo-1758518730083-4c12527b6742?auto=format&fit=crop&w=800&q=70" alt="Nexora Business" loading="lazy" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+            <div class="p-6"><span class="text-xs text-blue-400 font-semibold">BUSINESS</span><h3 class="font-display text-xl font-semibold text-white mt-2">Nexora Business</h3><p class="text-sm text-slate-400 mt-2">Pick a business type (retail, clinic, real estate, beauty…). Each type opens its own dedicated site. <span class="text-blue-400">View demo →</span></p></div>
+          </a>
+          <a href="advertising.html" target="_blank" class="reveal group glass glass-hover rounded-2xl overflow-hidden block" style="transition-delay:.2s">
+            <div class="h-52 relative overflow-hidden" style="background:linear-gradient(135deg,#f472b6,#a78bfa)">
+              <div class="absolute inset-0 grid place-items-center text-6xl opacity-60">📣</div>
+              <img src="https://images.unsplash.com/photo-1762417582194-7f0978f43fa0?auto=format&fit=crop&w=800&q=70" alt="Nexora Ads" loading="lazy" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+            <div class="p-6"><span class="text-xs text-pink-400 font-semibold">ADVERTISING</span><h3 class="font-display text-xl font-semibold text-white mt-2">Nexora Ads</h3><p class="text-sm text-slate-400 mt-2">Pick an ad type (social, search, billboards, video…). Each type opens its own dedicated site. <span class="text-pink-400">View demo →</span></p></div>
+          </a>
+        </div>
+        <div class="reveal mt-12 glass rounded-2xl p-8 sm:p-10">
+          <h3 class="font-display text-2xl font-semibold text-white">Every business gets its own website</h3>
+          <p class="mt-3 text-slate-400 max-w-3xl">These are examples of what we build. If you are opening a pizza shop, we build a dedicated pizza website with your menu, photos, cart and online orders. A burger place, café, barbershop, clothing store, clinic, advertising agency or any other business gets its own separate site, designed for that topic only. Tell us your idea and we will build it.</p>
+          <div class="mt-6 flex flex-wrap gap-2 text-sm text-slate-300">
+            <span class="glass rounded-full px-4 py-2">🍕 Pizza shop</span><span class="glass rounded-full px-4 py-2">🍔 Burger place</span><span class="glass rounded-full px-4 py-2">☕ Café</span><span class="glass rounded-full px-4 py-2">💈 Barbershop</span><span class="glass rounded-full px-4 py-2">👕 Clothing store</span><span class="glass rounded-full px-4 py-2">🏥 Clinic</span><span class="glass rounded-full px-4 py-2">📣 Ad agency</span><span class="glass rounded-full px-4 py-2">💼 Business services</span>
+          </div>
+          <a href="#contact" class="btn-primary inline-block mt-7 px-8 py-3.5 rounded-full">Tell us your idea</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRICING ============ -->
+    <section id="pricing" class="py-24 sm:py-32">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8">
+        <div class="text-center max-w-2xl mx-auto reveal">
+          <span class="text-brand-400 text-sm font-semibold tracking-widest uppercase">Pricing</span>
+          <h2 class="font-display text-3xl sm:text-5xl font-bold text-white mt-3">Transparent pricing</h2>
+          <p class="mt-4 text-slate-400 text-lg">The final price depends on the scope of your project.</p>
+        </div>
+
+        <div class="mt-16 grid lg:grid-cols-3 gap-6 items-stretch">
+          <div class="reveal glass glass-hover rounded-3xl p-8 flex flex-col">
+            <h3 class="font-display text-xl font-semibold text-white">Starter</h3>
+            <p class="text-sm text-slate-400 mt-1">Landing or one-page site</p>
+            <div class="mt-6 flex items-end gap-1"><span class="text-slate-400 mb-2">from</span><span class="font-display text-5xl font-bold text-white">$199</span></div>
+            <ul class="mt-8 space-y-3 text-sm flex-1">
+              <li class="flex gap-3"><span class="text-accent-400">✓</span> 1-page website</li>
+              <li class="flex gap-3"><span class="text-accent-400">✓</span> Mobile-friendly design</li>
+              <li class="flex gap-3"><span class="text-accent-400">✓</span> Contact form</li>
+              <li class="flex gap-3"><span class="text-accent-400">✓</span> Basic SEO</li>
+            </ul>
+            <a href="#contact" class="mt-8 glass text-white text-center font-semibold py-3.5 rounded-full hover:border-brand-400/60 transition">Choose</a>
+          </div>
+
+          <div class="reveal relative rounded-3xl p-[1.5px] bg-gradient-to-b from-brand-400 to-accent-400 lg:-translate-y-4" style="transition-delay:.1s">
+            <div class="bg-navy-900 rounded-3xl p-8 flex flex-col h-full">
+              <span class="absolute -top-3 left-1/2 -translate-x-1/2 btn-primary text-white text-xs font-bold px-4 py-1.5 rounded-full">MOST POPULAR</span>
+              <h3 class="font-display text-xl font-semibold text-white">Business</h3>
+              <p class="text-sm text-slate-400 mt-1">Company website</p>
+              <div class="mt-6 flex items-end gap-1"><span class="text-slate-400 mb-2">from</span><span class="font-display text-5xl font-bold text-white">$449</span></div>
+              <ul class="mt-8 space-y-3 text-sm flex-1">
+                <li class="flex gap-3"><span class="text-accent-400">✓</span> 5–8 pages</li>
+                <li class="flex gap-3"><span class="text-accent-400">✓</span> Unique design & animations</li>
+                <li class="flex gap-3"><span class="text-accent-400">✓</span> Multilingual support</li>
+                <li class="flex gap-3"><span class="text-accent-400">✓</span> Advanced SEO</li>
+                <li class="flex gap-3"><span class="text-accent-400">✓</span> 1 month free support</li>
+              </ul>
+              <a href="#contact" class="btn-primary mt-8 text-white text-center font-semibold py-3.5 rounded-full">Choose</a>
+            </div>
+          </div>
+
+          <div class="reveal glass glass-hover rounded-3xl p-8 flex flex-col" style="transition-delay:.2s">
+            <h3 class="font-display text-xl font-semibold text-white">Premium</h3>
+            <p class="text-sm text-slate-400 mt-1">Online store / custom system</p>
+            <div class="mt-6 flex items-end gap-1"><span class="text-slate-400 mb-2">from</span><span class="font-display text-5xl font-bold text-white">$899</span></div>
+            <ul class="mt-8 space-y-3 text-sm flex-1">
+              <li class="flex gap-3"><span class="text-accent-400">✓</span> E-commerce features</li>
+              <li class="flex gap-3"><span class="text-accent-400">✓</span> Payment integration</li>
+              <li class="flex gap-3"><span class="text-accent-400">✓</span> Admin dashboard</li>
+              <li class="flex gap-3"><span class="text-accent-400">✓</span> Full SEO & analytics</li>
+              <li class="flex gap-3"><span class="text-accent-400">✓</span> 3 months free support</li>
+            </ul>
+            <a href="#contact" class="mt-8 glass text-white text-center font-semibold py-3.5 rounded-full hover:border-brand-400/60 transition">Choose</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FAQ ============ -->
+    <section id="faq" class="py-24 sm:py-32">
+      <div class="max-w-3xl mx-auto px-5 sm:px-8">
+        <div class="text-center reveal">
+          <span class="text-brand-400 text-sm font-semibold tracking-widest uppercase">FAQ</span>
+          <h2 class="font-display text-3xl sm:text-5xl font-bold text-white mt-3">Frequently asked questions</h2>
+        </div>
+        <div class="mt-12 space-y-4 reveal">
+          <details class="glass rounded-2xl p-6 group">
+            <summary class="cursor-pointer flex justify-between items-center text-white font-semibold list-none">How long does a website take?<span class="text-brand-400 group-open:rotate-45 transition text-2xl">+</span></summary>
+            <p class="mt-4 text-slate-400 leading-relaxed">Simple sites take 3–7 days, larger projects 2–4 weeks. The exact timeline depends on scope.</p>
+          </details>
+          <details class="glass rounded-2xl p-6 group">
+            <summary class="cursor-pointer flex justify-between items-center text-white font-semibold list-none">Are domain and hosting included?<span class="text-brand-400 group-open:rotate-45 transition text-2xl">+</span></summary>
+            <p class="mt-4 text-slate-400 leading-relaxed">I can purchase and set up your domain and hosting. This is billed separately once a year.</p>
+          </details>
+          <details class="glass rounded-2xl p-6 group">
+            <summary class="cursor-pointer flex justify-between items-center text-white font-semibold list-none">Will it look right on mobile?<span class="text-brand-400 group-open:rotate-45 transition text-2xl">+</span></summary>
+            <p class="mt-4 text-slate-400 leading-relaxed">Yes. Every site is built to work perfectly on phones, tablets and desktops.</p>
+          </details>
+          <details class="glass rounded-2xl p-6 group">
+            <summary class="cursor-pointer flex justify-between items-center text-white font-semibold list-none">Can I make changes after launch?<span class="text-brand-400 group-open:rotate-45 transition text-2xl">+</span></summary>
+            <p class="mt-4 text-slate-400 leading-relaxed">Of course. Small changes are free during the support period; later work is agreed separately.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section id="contact" class="py-24 sm:py-32">
+      <div class="max-w-6xl mx-auto px-5 sm:px-8">
+        <div class="glass rounded-[2rem] p-8 sm:p-14 relative overflow-hidden reveal">
+          <div class="absolute -top-24 -right-24 w-72 h-72 bg-brand-500/30 blur-[100px] rounded-full"></div>
+          <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-accent-500/20 blur-[100px] rounded-full"></div>
+
+          <div class="relative grid lg:grid-cols-2 gap-12">
+            <div>
+              <span class="text-brand-400 text-sm font-semibold tracking-widest uppercase">Contact</span>
+              <h2 class="font-display text-3xl sm:text-5xl font-bold text-white mt-3 leading-tight">Let's build your project together</h2>
+              <p class="mt-5 text-slate-400 text-lg">Email me about your project and I will reply within 24 hours.</p>
+
+              <div class="mt-10 space-y-5">
+                <a href="mailto:fikratnazirli70@gmail.com" class="flex items-center gap-4 group">
+                  <span class="w-12 h-12 rounded-xl bg-accent-500/15 grid place-items-center text-xl">✉️</span>
+                  <span class="text-white group-hover:text-brand-400 transition">fikratnazirli70@gmail.com</span>
+                </a>
+              </div>
+            </div>
+
+            <form id="contactForm" class="space-y-4">
+              <input required name="name" type="text" placeholder="Your name" class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-slate-500 transition" />
+              <input required name="email" type="email" placeholder="Your email" class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-slate-500 transition" />
+              <select name="type" class="w-full bg-navy-800 border border-white/10 rounded-xl px-5 py-4 text-slate-300 transition">
+                <option>Business website</option>
+                <option>Online store</option>
+                <option>Landing page</option>
+                <option>Other</option>
+              </select>
+              <textarea required name="msg" rows="4" placeholder="Tell me briefly about your project" class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-slate-500 transition resize-none"></textarea>
+              <button type="submit" class="btn-primary w-full text-white font-semibold py-4 rounded-xl">Send message</button>
+              <p class="text-xs text-slate-500 text-center">Your email app will open with the message ready to send.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="border-t border-white/5 py-10">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+      <div class="flex items-center gap-2.5">
+        <span class="w-8 h-8 rounded-lg btn-primary grid place-items-center text-white font-display font-bold">N</span>
+        <span class="font-display text-white font-semibold">Nexora.Web</span>
+      </div>
+      <p>© <span id="year"></span> Nexora Web. All rights reserved.</p>
+      <div class="flex gap-5">
+        <a href="#" class="hover:text-white transition">Instagram</a>
+        <a href="#" class="hover:text-white transition">LinkedIn</a>
+        <a href="#" class="hover:text-white transition">Facebook</a>
+      </div>
+    </div>
+    <div class="text-center pb-6"><a href="admin.html" class="text-xs text-slate-600 hover:text-slate-400">Admin</a></div>
+  </footer>
+
+  <!-- ============ SCRIPTS ============ -->
+  <script>
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+    // Navbar on scroll
+    const nav = document.getElementById('nav');
+    const onScroll = () => {
+      nav.classList.toggle('bg-ink/70', window.scrollY > 20);
+      nav.classList.toggle('backdrop-blur-xl', window.scrollY > 20);
+      nav.classList.toggle('border-b', window.scrollY > 20);
+      nav.classList.toggle('border-white/5', window.scrollY > 20);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+    // Reveal on scroll
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('show'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // Counters
+    const counters = document.querySelectorAll('[data-count]');
+    const cio = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target, target = +el.dataset.count; let n = 0;
+        const step = Math.max(1, Math.ceil(target / 50));
+        const t = setInterval(() => { n = Math.min(target, n + step); el.textContent = n; if (n >= target) clearInterval(t); }, 30);
+        cio.unobserve(el);
+      });
+    }, { threshold: 0.6 });
+    counters.forEach(c => cio.observe(c));
+
+    // Contact form -> opens the visitor's email app
+    const CONTACT_EMAIL = 'fikratnazirli70@gmail.com';
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const subject = `New project enquiry: ${f.get('type')}`;
+      const body = `Hello, I'm ${f.get('name')}.\n\nProject type: ${f.get('type')}\nMy email: ${f.get('email')}\n\n${f.get('msg')}`;
+      if (window.nx && nx.enabled) {
+          nx.send({site:'Nexora Web (main site)', name:f.get('name'), email:f.get('email'), subject, body}).then(ok => {
+            let m = document.getElementById('cfMsg');
+            if(!m){ m=document.createElement('p'); m.id='cfMsg'; m.className='text-sm text-center mt-3'; e.target.appendChild(m); }
+            m.className='text-sm text-center mt-3 '+(ok?'text-emerald-300':'text-rose-300');
+            m.textContent = ok ? '✅ Sent! We will reply by email.' : 'Could not send. Please email us directly.';
+            if(ok) e.target.reset();
+          });
+        } else {
+          window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+    });
+
+    // Animated particle network background
+    (function () {
+      const c = document.getElementById('net'), ctx = c.getContext('2d');
+      let w, h, pts = [];
+      const mouse = { x: null, y: null };
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function resize() {
+        w = c.width = window.innerWidth; h = c.height = window.innerHeight;
+        const n = Math.min(90, Math.floor((w * h) / 18000));
+        pts = Array.from({ length: n }, () => ({
+          x: Math.random() * w, y: Math.random() * h,
+          vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35,
+          r: Math.random() * 1.6 + .6,
+        }));
+      }
+      window.addEventListener('resize', resize); resize();
+      window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+      window.addEventListener('mouseleave', () => { mouse.x = mouse.y = null; });
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        for (const p of pts) {
+          if (!reduce) { p.x += p.vx; p.y += p.vy; }
+          if (p.x < 0 || p.x > w) p.vx *= -1;
+          if (p.y < 0 || p.y > h) p.vy *= -1;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283);
+          ctx.fillStyle = 'rgba(120,190,255,.7)'; ctx.fill();
+        }
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y, d = Math.hypot(dx, dy);
+            if (d < 130) {
+              ctx.strokeStyle = `rgba(94,176,255,${.16 * (1 - d / 130)})`;
+              ctx.lineWidth = 1; ctx.beginPath();
+              ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y); ctx.stroke();
+            }
+          }
+          if (mouse.x !== null) {
+            const dx = pts[i].x - mouse.x, dy = pts[i].y - mouse.y, d = Math.hypot(dx, dy);
+            if (d < 170) {
+              ctx.strokeStyle = `rgba(34,230,199,${.3 * (1 - d / 170)})`;
+              ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+  </script>
+<script>
+/* ===== Nexora Web — messages setup =====
+   1) Create a free Supabase project, run setup.sql in its SQL editor.
+   2) Paste your Project URL and anon public key below.
+   Leave them empty and the site simply opens the visitor's email app instead. */
+window.NX_CONFIG = {
+  url: 'https://mhsxdiczajglurxsobig.supabase.co',            // e.g. https://abcdxyz.supabase.co
+  key: 'sb_publishable_t-mIyFkM36sj97BW8CSHAQ_tmzxKf8F',            // anon public key
+  email: 'fikratnazirli70@gmail.com'
+};
+(function(){
+  var C = window.NX_CONFIG;
+  var nx = window.nx = { enabled: !!(C.url && C.key), email: C.email };
+  nx.send = function(m){
+    if(!nx.enabled) return Promise.resolve(false);
+    return fetch(C.url.replace(/\/$/,'') + '/rest/v1/messages', {
+      method:'POST',
+      headers:{'apikey':C.key,'Authorization':(C.key.indexOf('eyJ')===0?'Bearer '+C.key:undefined),'Content-Type':'application/json','Prefer':'return=minimal'},
+      body: JSON.stringify({site:String(m.site||'').slice(0,200),name:String(m.name||'').slice(0,200),email:String(m.email||'').slice(0,200),subject:String(m.subject||'').slice(0,300),body:String(m.body||'').slice(0,8000)})
+    }).then(function(r){return r.ok}).catch(function(){return false});
+  };
+  function widget(){
+    if(document.getElementById('nxFab')) return;
+    var fab=document.createElement('button');
+    fab.id='nxFab'; fab.type='button'; fab.textContent='💬 Message us';
+    fab.style.cssText='position:fixed;bottom:20px;right:20px;z-index:55;padding:12px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(15,23,42,.9);color:#fff;font:600 14px Inter,system-ui,sans-serif;cursor:pointer;backdrop-filter:blur(8px)';
+    var box=document.createElement('div');
+    box.id='nxBox'; box.style.cssText='display:none;position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.65);align-items:center;justify-content:center;padding:16px';
+    box.innerHTML='<form id="nxForm" style="width:100%;max-width:420px;background:#0b1224;border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:24px;color:#e2e8f0;font:14px Inter,system-ui,sans-serif;display:grid;gap:12px">'
+     +'<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:20px;color:#fff">Send us a message</b><button type="button" id="nxX" style="background:none;border:0;color:#fff;font-size:26px;cursor:pointer">×</button></div>'
+     +'<input name="name" required placeholder="Your name" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff">'
+     +'<input name="email" type="email" required placeholder="Your email" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff">'
+     +'<textarea name="msg" rows="4" required placeholder="Your message" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;resize:none"></textarea>'
+     +'<button style="padding:13px;border-radius:999px;border:0;background:linear-gradient(135deg,var(--a1,#22e6c7),var(--a2,#6366f1));color:#04101c;font-weight:700;cursor:pointer">Send message</button>'
+     +'<p id="nxOut" style="margin:0;text-align:center;font-size:13px;color:#94a3b8">We reply by email.</p></form>';
+    document.body.appendChild(fab); document.body.appendChild(box);
+    fab.onclick=function(){box.style.display='flex'};
+    box.querySelector('#nxX').onclick=function(){box.style.display='none'};
+    box.onclick=function(e){if(e.target===box)box.style.display='none'};
+    box.querySelector('#nxForm').onsubmit=function(e){
+      e.preventDefault();
+      var f=new FormData(e.target), out=box.querySelector('#nxOut');
+      var data={site:document.title,name:f.get('name'),email:f.get('email'),subject:'Message from website',body:f.get('msg')};
+      if(!nx.enabled){
+        location.href='mailto:'+nx.email+'?subject='+encodeURIComponent('Message from '+document.title)+'&body='+encodeURIComponent('Name: '+data.name+'\nEmail: '+data.email+'\n\n'+data.body);
+        return;
+      }
+      out.textContent='Sending…';
+      nx.send(data).then(function(ok){
+        out.style.color=ok?'#6ee7b7':'#fda4af';
+        out.textContent=ok?'✅ Sent! We will reply by email.':'Could not send. Please use the Email us button.';
+        if(ok)e.target.reset();
+      });
+    };
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',widget);else widget();
+})();
+
+</script></body>
+</html>
